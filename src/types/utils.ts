@@ -1,17 +1,19 @@
-import * as jwt from 'jsonwebtoken';
+import { APIGatewayProxyResult } from "aws-lambda";
 
-export const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret-for-dev';
+// just a helper so i dont have to repeat this everywhere
+export const createResponse = (statusCode: number, body: object): APIGatewayProxyResult => {
+  return {
+    statusCode,
+    headers: {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "Content-Type,Authorization",
+    },
+    body: JSON.stringify(body),
+  };
+};
 
-export const createResponse = (statusCode: number, body: any) => ({
-  statusCode,
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify(body),
-});
-
-export const verifyToken = (token: string): any => {
-  try {
-    return jwt.verify(token, JWT_SECRET);
-  } catch (err) {
-    return null;
-  }
+// quick error response
+export const errorResponse = (statusCode: number, message: string): APIGatewayProxyResult => {
+  return createResponse(statusCode, { message });
 };
