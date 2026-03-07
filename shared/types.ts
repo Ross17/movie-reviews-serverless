@@ -52,3 +52,8 @@ export interface ConfirmBody {
   email: string;
   code: string;
 }
+
+export interface SigninBody {
+  email: string;
+  password: string;
+}
