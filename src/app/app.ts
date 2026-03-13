@@ -4,8 +4,11 @@ import {
   DynamoDBDocumentClient,
   GetCommand,
   QueryCommand,
+  PutCommand,
+  UpdateCommand,
 } from "@aws-sdk/lib-dynamodb";
 import { createResponse, errorResponse } from "../../shared/utils";
+import { AddReviewBody, UpdateReviewBody } from "../../shared/types";
 
 const client = new DynamoDBClient({ region: process.env.REGION });
 const ddb = DynamoDBDocumentClient.from(client);
@@ -17,6 +20,11 @@ const formatReview = (item: Record<string, any>) => ({
   date: item.publishedDate,
   text: item.text,
 });
+
+// email passed from custom authorizer via context
+const getReviewerId = (event: APIGatewayProxyEvent): string | null => {
+  return event.requestContext?.authorizer?.email ?? null;
+};
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   const method = event.httpMethod;
@@ -78,10 +86,39 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
       return createResponse(200, { reviews: result.Items?.map(formatReview) ?? [] });
     }
 
+     // POST /movies/reviews - auth required
+    if (method === "POST" && path.endsWith("/movies/reviews")) {
+      const reviewerId = getReviewerId(event);
+      if (!reviewerId) return errorResponse(401, "unauthorized");
+
+      const body: AddReviewBody = JSON.parse(event.body || "{}");
+      const { movieId, text, date } = body;
+
+      if (!movieId || !text || !date) {
+        return errorResponse(400, "movieId, review and date are required");
+      }
+
+      await ddb.send(new PutCommand({
+        TableName: TABLE,
+        ConditionExpression: "attribute_not_exists(pk)",
+        Item: {
+          pk: `m#${movieId}`,
+          sk: `r#${reviewerId}`,
+          movieId: Number(movieId),
+          reviewerId,
+          publishedDate: date,
+          text,
+        },
+      }));
+
+      return createResponse(201, { message: "review added successfully" });
+    }
+
     return errorResponse(404, "route not found");
 
   } catch (err: any) {
     console.error(err);
     return errorResponse(500, "internal server error");
   }
+ 
 };
