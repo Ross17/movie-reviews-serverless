@@ -1,0 +1,37 @@
+[
+  {
+    "pk": "m#1234",
+    "sk": "m#1234",
+    "title": "The Shawshank Redemption",
+    "date": "1995-03-01",
+    "overview": "A banker convicted of uxoricide forms a friendship over a quarter century with a hardened convict"
+  },
+  {
+    "pk": "m#5678",
+    "sk": "m#5678",
+    "title": "The Godfather",
+    "date": "1972-03-24",
+    "overview": "The aging patriarch of an organized crime dynasty transfers control to his reluctant son"
+  },
+  {
+    "pk": "m#9999",
+    "sk": "m#9999",
+    "title": "Inception",
+    "date": "2010-07-16",
+    "overview": "A thief who steals corporate secrets through dream sharing technology"
+  },
+  {
+    "pk": "m#1111",
+    "sk": "m#1111",
+    "title": "The Dark Knight",
+    "date": "2008-07-18",
+    "overview": "When the menace known as the Joker wreaks havoc on Gotham City"
+  },
+  {
+    "pk": "m#2222",
+    "sk": "m#2222",
+    "title": "Pulp Fiction",
+    "date": "1994-10-14",
+    "overview": "The lives of two mob hitmen, a boxer, a gangster and his wife intertwine"
+  }
+]

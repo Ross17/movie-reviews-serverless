@@ -55,7 +55,10 @@ export class MovieReviewsStack extends cdk.Stack {
         userPassword: true,
         userSrp: true,
       },
-      generateSecret: false, // must be false for frontend
+      generateSecret: false, 
+      accessTokenValidity: cdk.Duration.minutes(60),
+      idTokenValidity:     cdk.Duration.minutes(10),
+      refreshTokenValidity: cdk.Duration.days(1),
     });
 
     // shared layer - not sure if i need this but keeping it anyway

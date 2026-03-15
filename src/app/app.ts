@@ -114,6 +114,40 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
       return createResponse(201, { message: "review added successfully" });
     }
 
+    // PUT /movies/{movieId}/reviews - auth required, own review only
+    if (method === "PUT" && params.movieId) {
+      const reviewerId = getReviewerId(event);
+      if (!reviewerId) return errorResponse(401, "unauthorized");
+
+      const body: UpdateReviewBody = JSON.parse(event.body || "{}");
+      const { text } = body;
+
+      if (!text) return errorResponse(400, "text is required");
+
+      // check review exists first
+      const existing = await ddb.send(new GetCommand({
+        TableName: TABLE,
+        Key: { pk: `m#${params.movieId}`, sk: `r#${reviewerId}` },
+      }));
+
+      if (!existing.Item) return errorResponse(404, "review not found");
+
+      // only allow updating your own review
+      if (existing.Item.reviewerId !== reviewerId) {
+        return errorResponse(403, "you can only update your own reviews");
+      }
+
+      await ddb.send(new UpdateCommand({
+        TableName: TABLE,
+        Key: { pk: `m#${params.movieId}`, sk: `r#${reviewerId}` },
+        UpdateExpression: "SET #t = :text",
+        ExpressionAttributeNames: { "#t": "text" },
+        ExpressionAttributeValues: { ":text": text },
+      }));
+
+      return createResponse(200, { message: "review updated successfully" });
+    }
+
     return errorResponse(404, "route not found");
 
   } catch (err: any) {
