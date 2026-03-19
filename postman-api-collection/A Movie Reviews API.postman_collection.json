@@ -1,0 +1,265 @@
+{
+  "info": {
+    "_postman_id": "5adab93d-67db-475f-b152-a0dbfd088986",
+    "name": "A Movie Reviews API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "27073832"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Signup",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{testEmail}}\",\n  \"password\": \"{{testPassword}}\",\n  \"name\": \"Test User\"\n}"
+            },
+            "url": {
+              "raw": "{{authApiUrl}}/auth/signup",
+              "host": [
+                "{{authApiUrl}}"
+              ],
+              "path": [
+                "auth",
+                "signup"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Confirm Signup",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{testEmail}}\",\n  \"code\": \"120917\"\n}"
+            },
+            "url": {
+              "raw": "{{authApiUrl}}/auth/confirm-signup",
+              "host": [
+                "{{authApiUrl}}"
+              ],
+              "path": [
+                "auth",
+                "confirm-signup"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Signin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if(res.token) {",
+                  "  pm.environment.set('idToken', res.token);",
+                  "  pm.environment.set('accessToken', res.accessToken);",
+                  "  console.log('tokens saved to environment');",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{testEmail}}\",\n  \"password\": \"{{testPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{authApiUrl}}/auth/signin",
+              "host": [
+                "{{authApiUrl}}"
+              ],
+              "path": [
+                "auth",
+                "signin"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Signout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{authApiUrl}}/auth/signout",
+              "host": [
+                "{{authApiUrl}}"
+              ],
+              "path": [
+                "auth",
+                "signout"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "App",
+      "item": [
+        {
+          "name": "Get Movie Reviews",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": ""
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Movie by year and id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{appApiUrl}}reviews?movie=1234&published=1995",
+              "host": [
+                "{{appApiUrl}}reviews"
+              ],
+              "query": [
+                {
+                  "key": "movie",
+                  "value": "1234"
+                },
+                {
+                  "key": "published",
+                  "value": "1995"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Reviews by User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{appApiUrl}}/movies/5678/reviews?reviewer=ross17k@gmail.com",
+              "host": [
+                "{{appApiUrl}}"
+              ],
+              "path": [
+                "movies",
+                "5678",
+                "reviews"
+              ],
+              "query": [
+                {
+                  "key": "reviewer",
+                  "value": "ross17k@gmail.com"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add Review",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"movieId\": {{movieId}},\n  \"text\": \"This is a great movie!\",\n  \"date\": \"{{publishedDate}}\"\n}"
+            },
+            "url": {
+              "raw": ""
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Review",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Updated review text!\"\n}"
+            },
+            "url": {
+              "raw": "{{appApiUrl}}movies/2222/reviews",
+              "host": [
+                "{{appApiUrl}}movies"
+              ],
+              "path": [
+                "2222",
+                "reviews"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
