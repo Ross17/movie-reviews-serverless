@@ -1,4 +1,4 @@
-# Welcome to your CDK TypeScript project
+# Welcome to 'Movie Reviews Serverless API' 
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
